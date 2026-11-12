@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface WipeTransitionProps {
   trigger: boolean
@@ -12,26 +12,42 @@ interface WipeTransitionProps {
 }
 
 /**
- * GT3 RS Wipe Transition — three layered wipes that cover the screen
+ * GT3 Wipe Transition — three layered wipes that cover the screen
  * (Carmine Crimson → Charcoal → Obsidian Black) then exit.
+ *
+ * Important: the container unmounts itself once finished. If it stayed
+ * mounted it would keep covering the viewport (fixed, z-index 9999) and
+ * swallow every click on the page — navbar / hero buttons would go dead.
  */
 export default function WipeTransition({ trigger, onCovered, onDone, delay = 0 }: WipeTransitionProps) {
   const [active, setActive] = useState(false)
+  const [finished, setFinished] = useState(false)
+
+  // Keep callbacks in refs so the timers below are set up exactly once
+  // per trigger and are never reset by parent re-renders.
+  const coveredRef = useRef(onCovered)
+  const doneRef = useRef(onDone)
+  useEffect(() => {
+    coveredRef.current = onCovered
+    doneRef.current = onDone
+  }, [onCovered, onDone])
 
   useEffect(() => {
-    if (trigger) {
-      const t0 = setTimeout(() => setActive(true), delay)
-      const t1 = setTimeout(() => onCovered?.(), delay + 2100)
-      const t2 = setTimeout(() => onDone?.(), delay + 5500)
-      return () => {
-        clearTimeout(t0)
-        clearTimeout(t1)
-        clearTimeout(t2)
-      }
+    if (!trigger) return
+    const t0 = setTimeout(() => setActive(true), delay)
+    const t1 = setTimeout(() => coveredRef.current?.(), delay + 2100)
+    const t2 = setTimeout(() => doneRef.current?.(), delay + 5500)
+    const t3 = setTimeout(() => setFinished(true), delay + 5600)
+    return () => {
+      clearTimeout(t0)
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
     }
-  }, [trigger, delay, onCovered, onDone])
+  }, [trigger, delay])
 
-  if (!trigger) return null
+  // Fully remove the overlay (and its pointer events) once done.
+  if (!trigger || finished) return null
 
   return (
     <div className="wipe-container" style={{ pointerEvents: active ? 'all' : 'none' }}>

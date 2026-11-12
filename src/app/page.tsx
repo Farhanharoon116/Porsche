@@ -12,7 +12,8 @@ import PortfolioSection from '@/components/porsche/PortfolioSection'
 import ProcessSection from '@/components/porsche/ProcessSection'
 import TestimonialsSection from '@/components/porsche/TestimonialsSection'
 import FAQSection from '@/components/porsche/FAQSection'
-import ContactSection, { Footer } from '@/components/porsche/ContactSection'
+import ContactSection from '@/components/porsche/ContactSection'
+import FooterSection from '@/components/porsche/FooterSection'
 import { initLenis, destroyLenis } from '@/lib/lenis'
 
 export default function Home() {
@@ -77,7 +78,7 @@ export default function Home() {
           <FAQSection />
           <ContactSection />
         </main>
-        <Footer />
+        <FooterSection />
       </div>
     </>
   )

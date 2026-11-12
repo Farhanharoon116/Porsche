@@ -250,7 +250,7 @@ html.lenis body {
 
 .mobile-menu-btn {
   display: none;
-  position: absolute;
+  position: fixed;
   right: 16px;
   top: 22px;
   width: 46px;
