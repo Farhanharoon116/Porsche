@@ -185,7 +185,7 @@ export default function FooterSection() {
 
           <div className="pt-6 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs text-white/35">
-              © 2025 · Unofficial concept site made for demonstration purposes.
+              © 2026 · Unofficial concept site made for demonstration purposes.
             </div>
             <div className="text-xs text-white/35">
               Porsche and 911 GT3 are trademarks of Dr. Ing. h.c. F. Porsche AG.
