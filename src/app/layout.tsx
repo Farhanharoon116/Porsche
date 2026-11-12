@@ -1,17 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, Manrope } from "next/font/google";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({
-  variable: "--font-inter",
+const grotesk = Space_Grotesk({
+  variable: "--font-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Porsche 911 GT3 — Born to perform. Built to dominate.",
-  description: "Experience the Porsche 911 GT3 — a 3D interactive journey through precision engineering, raw power, and timeless design. From the legendary flat-six engine to the aerodynamic silhouette, every detail tells a story.",
+  title: "Porsche 911 GT3 — Engineered for the track. Tamed for the road.",
+  description:
+    "Experience the Porsche 911 GT3 — a 3D interactive journey through precision engineering, raw power, and timeless design. 502 hp naturally aspirated flat-six, 9,000 rpm redline, 318 km/h.",
   keywords: ["Porsche", "911 GT3", "sports car", "3D model", "performance", "luxury car", "supercar"],
   authors: [{ name: "Porsche AG" }],
   icons: {
@@ -19,19 +27,19 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Porsche 911 GT3",
-    description: "Born to perform. Built to dominate.",
+    description: "Engineered for the track. Tamed for the road.",
     siteName: "Porsche 911 GT3",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Porsche 911 GT3",
-    description: "Born to perform. Built to dominate.",
+    description: "Engineered for the track. Tamed for the road.",
   },
 };
 
 export const viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -40,19 +48,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBjH0g=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-        />
-      </head>
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased bg-background text-foreground`}
-        style={{ backgroundColor: "#0a0a0a", color: "#EAEAEA" }}
+        className={`${grotesk.variable} ${manrope.variable} antialiased bg-background text-foreground`}
+        style={{ backgroundColor: "#ffffff", color: "#0a0a0a" }}
       >
         {children}
         <Toaster />

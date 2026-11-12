@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { scrollToId } from '@/lib/lenis'
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -13,7 +14,7 @@ export default function ContactSection() {
       (entries) => {
         if (entries[0].isIntersecting) setVisible(true)
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     )
     if (sectionRef.current) obs.observe(sectionRef.current)
     return () => obs.disconnect()
@@ -21,260 +22,119 @@ export default function ContactSection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // In real life: send to /api/contact. Here we just acknowledge.
     setSent(true)
     setTimeout(() => setSent(false), 4000)
     setForm({ name: '', email: '', interest: 'purchase', message: '' })
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '13px 16px',
+    background: '#f7f7f5',
+    border: '1px solid rgba(10,10,10,0.1)',
+    borderRadius: '12px',
+    color: '#0a0a0a',
+    fontSize: '0.9rem',
+    fontFamily: 'var(--font-manrope), sans-serif',
+    outline: 'none',
+    transition: 'border-color 0.3s',
+  }
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: '0.62rem',
+    fontWeight: 700,
+    letterSpacing: '0.18em',
+    color: '#737373',
+    textTransform: 'uppercase',
+    marginBottom: '8px',
   }
 
   return (
     <section
       id="contact"
       ref={sectionRef}
-      className="relative w-full"
-      style={{
-        background:
-          'linear-gradient(180deg, #0a0a0a 0%, #141414 50%, #0a0a0a 100%)',
-        padding: '140px 0 80px',
-      }}
+      className="w-full bg-[#f7f7f5] border-t border-black/5"
     >
-      {/* Decorative glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '700px',
-          height: '700px',
-          background:
-            'radial-gradient(circle, rgba(158, 34, 29, 0.1) 0%, transparent 70%)',
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
-        {/* Header */}
-        <div
-          style={{
-            textAlign: 'center',
-            marginBottom: '70px',
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(30px)',
-            transition: 'all 0.8s ease',
-          }}
-        >
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '24px',
-              padding: '6px 16px',
-              borderRadius: '50px',
-              border: '1px solid rgba(158, 34, 29, 0.3)',
-              background: 'rgba(20, 20, 20, 0.5)',
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: '#9E221D',
-                boxShadow: '0 0 8px #9E221D',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                letterSpacing: '4px',
-                color: '#C83228',
-                textTransform: 'uppercase',
-              }}
+      <div className={`reveal-section ${visible ? 'visible' : ''} max-w-6xl mx-auto px-6 sm:px-10 py-24`}>
+        <div className="grid lg:grid-cols-5 gap-10">
+          {/* Left — heading + info */}
+          <div className="lg:col-span-2">
+            <div className="kicker">Contact</div>
+            <h2
+              className="font-display mt-5 font-bold tracking-tight text-[#0a0a0a]"
+              style={{ fontSize: 'clamp(1.9rem, 3.6vw, 3rem)', lineHeight: 1.08, letterSpacing: '-0.03em' }}
             >
-              Get in Touch
-            </span>
+              Ready to
+              <br />
+              experience it?
+            </h2>
+            <p className="mt-4 text-neutral-600 text-[0.9rem] leading-relaxed max-w-sm">
+              Book a private viewing, schedule a track day or configure your
+              GT3 — our specialists are standing by.
+            </p>
+
+            <div className="mt-8 space-y-3">
+              {[
+                { icon: 'fa-location-dot', title: 'Porsche Centre', line: 'Porscheplatz 1, 70435 Stuttgart' },
+                { icon: 'fa-phone', title: 'Call us', line: '+49 711 911-0' },
+                { icon: 'fa-envelope', title: 'Email us', line: 'gt3@porsche.de' },
+              ].map((c, i) => (
+                <div key={i} className="min-card flex items-center gap-4 px-5 py-4">
+                  <span className="w-10 h-10 rounded-full bg-[#0a0a0a] text-white flex items-center justify-center text-sm shrink-0">
+                    <i className={`fa-solid ${c.icon}`} aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[0.6rem] font-bold tracking-[0.16em] uppercase text-neutral-500">
+                      {c.title}
+                    </span>
+                    <span className="block text-sm font-semibold text-[#0a0a0a] mt-0.5 truncate">{c.line}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <h2
-            style={{
-              fontSize: 'clamp(2.2rem, 6vw, 5rem)',
-              fontWeight: 900,
-              lineHeight: 0.95,
-              letterSpacing: '-0.03em',
-              color: '#EAEAEA',
-              marginBottom: '24px',
-            }}
-          >
-            <span style={{ color: 'transparent', WebkitTextStroke: '1px rgba(234, 234, 234, 0.4)' }}>
-              READY TO
-            </span>
-            <br />
-            <span
-              style={{
-                background: 'linear-gradient(180deg, #EAEAEA 0%, #9E221D 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              EXPERIENCE IT?
-            </span>
-          </h2>
-          <p
-            style={{
-              maxWidth: '580px',
-              margin: '0 auto',
-              fontSize: '1.05rem',
-              lineHeight: 1.7,
-              color: 'rgba(234, 234, 234, 0.7)',
-            }}
-          >
-            Book a private viewing. Schedule a track day. Configure your GT3.
-            Or simply ask us anything — our specialists are standing by.
-          </p>
-        </div>
-
-        {/* Form + Contact Cards */}
-        <div
-          className="grid grid-cols-1 lg:grid-cols-5 gap-8"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(30px)',
-            transition: 'all 0.8s 0.2s ease',
-          }}
-        >
-          {/* Form - 3 columns wide */}
+          {/* Right — form */}
           <div className="lg:col-span-3">
-            <form
-              onSubmit={handleSubmit}
-              className="neo-card"
-              style={{ padding: '40px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  marginBottom: '32px',
-                  paddingBottom: '20px',
-                  borderBottom: '1px solid rgba(234, 234, 234, 0.06)',
-                }}
-              >
-                <i
-                  className="fa-solid fa-paper-plane"
-                  style={{ color: '#C83228', fontSize: '1.5rem' }}
-                />
-                <h3
-                  style={{
-                    fontSize: '1.6rem',
-                    fontWeight: 800,
-                    color: '#EAEAEA',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  Send a Message
-                </h3>
+            <form onSubmit={handleSubmit} className="min-card p-7 sm:p-9" style={{ borderRadius: 22 }}>
+              <div className="flex items-center gap-3 pb-6 border-b border-black/8">
+                <i className="fa-solid fa-paper-plane text-[#9E221D]" aria-hidden="true" />
+                <h3 className="font-display text-lg font-bold text-[#0a0a0a]">Send a message</h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid sm:grid-cols-2 gap-5 mt-6">
                 <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      letterSpacing: '2px',
-                      color: 'rgba(234, 234, 234, 0.5)',
-                      textTransform: 'uppercase',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Full Name
-                  </label>
+                  <label style={labelStyle}>Full name</label>
                   <input
                     type="text"
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Your name"
-                    style={{
-                      width: '100%',
-                      padding: '14px 18px',
-                      background: 'rgba(20, 20, 20, 0.6)',
-                      border: '1px solid rgba(234, 234, 234, 0.1)',
-                      borderRadius: '10px',
-                      color: '#EAEAEA',
-                      fontSize: '0.95rem',
-                      fontFamily: 'Inter, sans-serif',
-                      outline: 'none',
-                      transition: 'border-color 0.3s',
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = '#9E221D')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(234, 234, 234, 0.1)')}
+                    style={inputStyle}
+                    onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                    onBlur={(e) => (e.target.style.borderColor = 'rgba(10,10,10,0.1)')}
                   />
                 </div>
                 <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      letterSpacing: '2px',
-                      color: 'rgba(234, 234, 234, 0.5)',
-                      textTransform: 'uppercase',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    Email Address
-                  </label>
+                  <label style={labelStyle}>Email</label>
                   <input
                     type="email"
                     required
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="you@email.com"
-                    style={{
-                      width: '100%',
-                      padding: '14px 18px',
-                      background: 'rgba(20, 20, 20, 0.6)',
-                      border: '1px solid rgba(234, 234, 234, 0.1)',
-                      borderRadius: '10px',
-                      color: '#EAEAEA',
-                      fontSize: '0.95rem',
-                      fontFamily: 'Inter, sans-serif',
-                      outline: 'none',
-                      transition: 'border-color 0.3s',
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = '#9E221D')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(234, 234, 234, 0.1)')}
+                    style={inputStyle}
+                    onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                    onBlur={(e) => (e.target.style.borderColor = 'rgba(10,10,10,0.1)')}
                   />
                 </div>
               </div>
 
-              <div style={{ marginTop: '20px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    letterSpacing: '2px',
-                    color: 'rgba(234, 234, 234, 0.5)',
-                    textTransform: 'uppercase',
-                    marginBottom: '8px',
-                  }}
-                >
-                  I am interested in
-                </label>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '10px',
-                    flexWrap: 'wrap',
-                  }}
-                >
+              <div className="mt-5">
+                <label style={labelStyle}>I am interested in</label>
+                <div className="flex flex-wrap gap-2">
                   {[
                     { id: 'purchase', label: 'Purchase', icon: 'fa-tag' },
                     { id: 'test-drive', label: 'Test Drive', icon: 'fa-car-side' },
@@ -285,282 +145,172 @@ export default function ContactSection() {
                       key={opt.id}
                       type="button"
                       onClick={() => setForm({ ...form, interest: opt.id })}
-                      style={{
-                        padding: '10px 18px',
-                        background:
-                          form.interest === opt.id
-                            ? 'rgba(158, 34, 29, 0.25)'
-                            : 'rgba(20, 20, 20, 0.6)',
-                        border: `1px solid ${
-                          form.interest === opt.id
-                            ? 'rgba(158, 34, 29, 0.6)'
-                            : 'rgba(234, 234, 234, 0.1)'
-                        }`,
-                        borderRadius: '8px',
-                        color:
-                          form.interest === opt.id ? '#EAEAEA' : 'rgba(234, 234, 234, 0.6)',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        fontFamily: 'Inter, sans-serif',
-                        transition: 'all 0.3s',
-                      }}
+                      className={`px-4 py-2.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                        form.interest === opt.id
+                          ? 'bg-[#0a0a0a] text-white border-[#0a0a0a]'
+                          : 'bg-white text-neutral-600 border-black/10 hover:border-black/40'
+                      }`}
                     >
-                      <i className={`fa-solid ${opt.icon}`} style={{ marginRight: 6 }} />
+                      <i className={`fa-solid ${opt.icon} mr-1.5`} aria-hidden="true" />
                       {opt.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div style={{ marginTop: '20px' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    letterSpacing: '2px',
-                    color: 'rgba(234, 234, 234, 0.5)',
-                    textTransform: 'uppercase',
-                    marginBottom: '8px',
-                  }}
-                >
-                  Your Message
-                </label>
+              <div className="mt-5">
+                <label style={labelStyle}>Message</label>
                 <textarea
                   required
                   rows={5}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   placeholder="Tell us what you're dreaming about…"
-                  style={{
-                    width: '100%',
-                    padding: '14px 18px',
-                    background: 'rgba(20, 20, 20, 0.6)',
-                    border: '1px solid rgba(234, 234, 234, 0.1)',
-                    borderRadius: '10px',
-                    color: '#EAEAEA',
-                    fontSize: '0.95rem',
-                    fontFamily: 'Inter, sans-serif',
-                    resize: 'vertical',
-                    outline: 'none',
-                    transition: 'border-color 0.3s',
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = '#9E221D')}
-                  onBlur={(e) => (e.target.style.borderColor = 'rgba(234, 234, 234, 0.1)')}
+                  style={{ ...inputStyle, resize: 'vertical' }}
+                  onFocus={(e) => (e.target.style.borderColor = '#0a0a0a')}
+                  onBlur={(e) => (e.target.style.borderColor = 'rgba(10,10,10,0.1)')}
                 />
               </div>
 
-              <button
-                type="submit"
-                className="btn-carmine"
-                style={{
-                  width: '100%',
-                  marginTop: '24px',
-                  padding: '16px 32px',
-                }}
-              >
+              <button type="submit" className="btn-dark w-full mt-6 !py-4">
                 {sent ? (
                   <>
-                    <i className="fa-solid fa-check" /> Message Sent
+                    <i className="fa-solid fa-check" aria-hidden="true" /> Message sent
                   </>
                 ) : (
                   <>
-                    <i className="fa-solid fa-paper-plane" /> Send Message
+                    <i className="fa-solid fa-paper-plane" aria-hidden="true" /> Send message
                   </>
                 )}
               </button>
             </form>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
-          {/* Contact info cards - 2 columns */}
-          <div className="lg:col-span-2 flex flex-col gap-5">
-            {[
-              {
-                icon: 'fa-solid fa-location-dot',
-                title: 'Porsche Centre',
-                line1: 'Stuttgart-Zuffenhausen',
-                line2: 'Porscheplatz 1, 70435',
-                action: 'Get Directions',
-              },
-              {
-                icon: 'fa-solid fa-phone',
-                title: 'Call Us',
-                line1: 'Sales: +49 711 911-0',
-                line2: 'Service: +49 711 911-1234',
-                action: 'Tap to Call',
-              },
-              {
-                icon: 'fa-solid fa-envelope',
-                title: 'Email Us',
-                line1: 'gt3@porsche.de',
-                line2: 'sales@porsche.de',
-                action: 'Compose Email',
-              },
-            ].map((card, i) => (
-              <div
-                key={i}
-                className="neo-card"
-                style={{
-                  padding: '24px',
-                  display: 'flex',
-                  gap: '16px',
-                  alignItems: 'center',
-                }}
+export function Footer() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    setSubscribed(true)
+    setEmail('')
+    setTimeout(() => setSubscribed(false), 3500)
+  }
+
+  return (
+    <footer className="w-full bg-[#0a0a0a] text-white">
+      <div className="max-w-6xl mx-auto px-6 sm:px-10 pt-16 pb-8">
+        {/* Top row */}
+        <div className="grid lg:grid-cols-2 gap-10 pb-12 border-b border-white/10">
+          <div>
+            <div className="font-display text-2xl font-bold tracking-[0.14em] uppercase">
+              PORSCHE<span style={{ color: '#9E221D' }}>.</span>
+            </div>
+            <p className="mt-3 text-white/50 text-sm leading-relaxed max-w-sm">
+              A 3D interactive tribute to the 911 GT3 — precision engineering,
+              raw power, timeless design.
+            </p>
+          </div>
+
+          {/* Newsletter */}
+          <div className="lg:justify-self-end w-full max-w-md">
+            <div className="text-[0.62rem] font-bold tracking-[0.2em] uppercase text-white/50 mb-4">
+              Stay in the loop
+            </div>
+            <form onSubmit={handleSubscribe} className="flex gap-2">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                className="flex-1 bg-white/8 border border-white/15 rounded-full px-5 py-3 text-sm text-white placeholder:text-white/35 outline-none focus:border-white/50 transition-colors"
+              />
+              <button
+                type="submit"
+                className="bg-white text-[#0a0a0a] font-semibold text-xs tracking-wide rounded-full px-6 py-3 hover:bg-[#9E221D] hover:text-white transition-colors cursor-pointer"
               >
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: '14px',
-                    background: 'linear-gradient(145deg, #9E221D, #481412)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    boxShadow: '0 4px 15px rgba(158, 34, 29, 0.3)',
-                  }}
-                >
-                  <i className={card.icon} style={{ color: '#EAEAEA', fontSize: '1.3rem' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: '0.65rem',
-                      fontWeight: 600,
-                      letterSpacing: '3px',
-                      color: '#C83228',
-                      textTransform: 'uppercase',
-                      marginBottom: '4px',
-                    }}
+                {subscribed ? 'Subscribed ✓' : 'Subscribe'}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Middle row */}
+        <div className="grid sm:grid-cols-3 gap-8 py-10 border-b border-white/10">
+          <div>
+            <div className="text-[0.6rem] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Explore</div>
+            <ul className="space-y-2.5">
+              {[
+                { label: 'Home', id: 'home' },
+                { label: 'About', id: 'about' },
+                { label: 'Portfolio', id: 'portfolio' },
+                { label: 'Contact', id: 'contact' },
+              ].map((l) => (
+                <li key={l.id}>
+                  <button
+                    onClick={() => scrollToId(l.id)}
+                    className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer"
                   >
-                    {card.title}
-                  </div>
-                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#EAEAEA' }}>
-                    {card.line1}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '0.85rem',
-                      color: 'rgba(234, 234, 234, 0.55)',
-                      marginTop: 2,
-                    }}
+                    {l.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-[0.6rem] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Models</div>
+            <ul className="space-y-2.5">
+              {['911 GT3', '911 GT3 RS', '911 GT3 Touring', '911 GT3 R'].map((m) => (
+                <li key={m}>
+                  <button
+                    onClick={() => scrollToId('portfolio')}
+                    className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer"
                   >
-                    {card.line2}
-                  </div>
-                </div>
-                <button
-                  style={{
-                    padding: '8px 14px',
-                    background: 'transparent',
-                    border: '1px solid rgba(158, 34, 29, 0.4)',
-                    borderRadius: '6px',
-                    color: '#C83228',
-                    fontSize: '0.7rem',
-                    fontWeight: 700,
-                    letterSpacing: '1.5px',
-                    cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
-                    textTransform: 'uppercase',
-                    transition: 'all 0.3s',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                  }}
+                    {m}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-[0.6rem] font-bold tracking-[0.2em] uppercase text-white/40 mb-4">Follow</div>
+            <div className="flex gap-3">
+              {[
+                { icon: 'fa-brands fa-instagram', label: 'Instagram' },
+                { icon: 'fa-brands fa-youtube', label: 'YouTube' },
+                { icon: 'fa-brands fa-x-twitter', label: 'X' },
+                { icon: 'fa-brands fa-tiktok', label: 'TikTok' },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href="#"
+                  aria-label={s.label}
+                  className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center text-white/60 hover:text-white hover:border-white/60 transition-colors"
                 >
-                  <i className="fa-solid fa-arrow-right" />
-                </button>
-              </div>
-            ))}
+                  <i className={s.icon} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="pt-7 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-xs text-white/35">
+            © 2025 · Unofficial concept site made for demonstration purposes.
+          </div>
+          <div className="text-xs text-white/35">
+            Porsche and 911 GT3 are trademarks of Dr. Ing. h.c. F. Porsche AG.
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer
-        style={{
-          marginTop: '100px',
-          paddingTop: '40px',
-          borderTop: '1px solid rgba(234, 234, 234, 0.06)',
-        }}
-      >
-        <div
-          className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '20px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: 800,
-                color: '#EAEAEA',
-                letterSpacing: '-0.5px',
-                textTransform: 'uppercase',
-              }}
-            >
-              PORSCHE<span style={{ color: '#9E221D' }}>.</span>
-            </span>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                color: 'rgba(234, 234, 234, 0.4)',
-                marginLeft: '8px',
-              }}
-            >
-              · 911 GT3 Edition
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: '24px',
-              alignItems: 'center',
-            }}
-          >
-            {['Instagram', 'YouTube', 'X', 'TikTok'].map((s) => (
-              <a
-                key={s}
-                href="#"
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: 'rgba(234, 234, 234, 0.5)',
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  transition: 'color 0.3s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#C83228')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(234, 234, 234, 0.5)')}
-              >
-                {s}
-              </a>
-            ))}
-          </div>
-
-          <div
-            style={{
-              fontSize: '0.7rem',
-              color: 'rgba(234, 234, 234, 0.3)',
-              letterSpacing: '1px',
-            }}
-          >
-            © 2025 Porsche AG · Made for the love of speed
-          </div>
-        </div>
-      </footer>
-    </section>
+    </footer>
   )
 }

@@ -1,76 +1,83 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import SpeedometerLoader from '@/components/porsche/SpeedometerLoader'
+import Loader from '@/components/porsche/Loader'
 import WipeTransition from '@/components/porsche/WipeTransition'
 import Navbar from '@/components/porsche/Navbar'
 import HeroSection from '@/components/porsche/HeroSection'
+import StatsBand from '@/components/porsche/StatsBand'
+import BrandStrip from '@/components/porsche/BrandStrip'
 import AboutSection from '@/components/porsche/AboutSection'
 import PortfolioSection from '@/components/porsche/PortfolioSection'
-import ContactSection from '@/components/porsche/ContactSection'
+import ProcessSection from '@/components/porsche/ProcessSection'
+import TestimonialsSection from '@/components/porsche/TestimonialsSection'
+import FAQSection from '@/components/porsche/FAQSection'
+import ContactSection, { Footer } from '@/components/porsche/ContactSection'
+import { initLenis, destroyLenis } from '@/lib/lenis'
 
 export default function Home() {
   const [loading, setLoading] = useState(true)
   const [wipeTrigger, setWipeTrigger] = useState(false)
   const [showContent, setShowContent] = useState(false)
 
-  // After loader completes -> trigger wipe transition
+  // Init Locomotive-style smooth scrolling once
+  useEffect(() => {
+    initLenis()
+    return () => destroyLenis()
+  }, [])
+
   const handleLoadComplete = () => {
     setWipeTrigger(true)
   }
 
-  // After wipe completes -> show content, hide loader
-  const handleWipeComplete = () => {
-    setLoading(false)
+  const handleWipeCovered = () => {
     setShowContent(true)
   }
 
-  // Fallback: if for any reason loader hangs, allow escape after 6s
+  const handleWipeDone = () => {
+    setLoading(false)
+  }
+
+  // Safety fallback — never trap the user behind the loader
   useEffect(() => {
-    const t = setTimeout(() => {
-      if (loading) {
-        setWipeTrigger(true)
-      }
-    }, 6000)
+    if (!loading) return
+    const t = setTimeout(() => setWipeTrigger(true), 4000)
     return () => clearTimeout(t)
   }, [loading])
 
-  // Handler when user clicks "Explore the GT3" in hero
-  const handleEnterPortfolio = () => {
-    const el = document.getElementById('portfolio')
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.pageYOffset - 80
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
-  }
-
   return (
     <>
-      {/* Loader with speedometer */}
-      {loading && (
-        <SpeedometerLoader onComplete={handleLoadComplete} />
-      )}
+      {loading && <Loader onComplete={handleLoadComplete} />}
 
-      {/* Wipe transition overlay */}
-      <WipeTransition trigger={wipeTrigger} onComplete={handleWipeComplete} />
+      <WipeTransition
+        trigger={wipeTrigger}
+        onCovered={handleWipeCovered}
+        onDone={handleWipeDone}
+      />
 
-      {/* Main app content (only after loader + wipe) */}
       <div
         style={{
           opacity: showContent ? 1 : 0,
-          transition: 'opacity 0.8s ease',
+          transition: 'opacity 0.6s ease',
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          background: '#ffffff',
         }}
       >
         <Navbar />
         <main style={{ flex: 1 }}>
-          <HeroSection onEnterPortfolio={handleEnterPortfolio} />
+          <HeroSection />
+          <StatsBand />
+          <BrandStrip />
           <AboutSection />
           <PortfolioSection />
+          <ProcessSection />
+          <TestimonialsSection />
+          <FAQSection />
           <ContactSection />
         </main>
+        <Footer />
       </div>
     </>
   )

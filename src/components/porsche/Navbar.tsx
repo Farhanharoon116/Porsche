@@ -1,43 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { scrollToId } from '@/lib/lenis'
 
 type SectionId = 'home' | 'about' | 'portfolio' | 'contact'
 
-interface NavbarProps {
-  onNavigate?: (section: SectionId) => void
-}
-
-export default function Navbar({ onNavigate }: NavbarProps) {
+export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>('home')
 
-  // Smooth scroll handler with 80px offset for fixed navbar
-  const handleNavClick = (e: React.MouseEvent, section: SectionId) => {
-    e.preventDefault()
-    const el = document.getElementById(section)
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.pageYOffset - 80
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
+  const handleNavClick = (section: SectionId) => {
+    scrollToId(section)
     setActiveSection(section)
-    onNavigate?.(section)
-    if (menuOpen) {
-      setMenuOpen(false)
-    }
+    setMenuOpen(false)
   }
 
-  // Scroll listener to update active bubble
+  // Scroll listener updates the active bubble based on section in view
   useEffect(() => {
     const handleScroll = () => {
       const sections: SectionId[] = ['home', 'about', 'portfolio', 'contact']
-      const scrollPos = window.scrollY + 200
+      const scrollPos = window.scrollY + 220
       let current: SectionId = 'home'
       for (const id of sections) {
         const el = document.getElementById(id)
-        if (el && el.offsetTop <= scrollPos) {
-          current = id
-        }
+        if (el && el.offsetTop <= scrollPos) current = id
       }
       setActiveSection(current)
     }
@@ -51,7 +37,7 @@ export default function Navbar({ onNavigate }: NavbarProps) {
       <nav
         style={{
           position: 'fixed',
-          top: '30px',
+          top: '24px',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 1000,
@@ -59,49 +45,44 @@ export default function Navbar({ onNavigate }: NavbarProps) {
         aria-label="Main navigation"
       >
         <div className={`glass-bubbles ${menuOpen ? 'active' : ''}`}>
-          {/* Home */}
           <button
             className={`nav-bubble ${activeSection === 'home' ? 'active' : ''}`}
             data-tooltip="Home"
-            onClick={(e) => handleNavClick(e, 'home')}
+            onClick={() => handleNavClick('home')}
             aria-label="Home"
           >
-            <i className="fa-solid fa-house"></i>
+            <i className="fa-solid fa-house" aria-hidden="true"></i>
           </button>
 
-          {/* About */}
           <button
             className={`nav-bubble ${activeSection === 'about' ? 'active' : ''}`}
             data-tooltip="About"
-            onClick={(e) => handleNavClick(e, 'about')}
+            onClick={() => handleNavClick('about')}
             aria-label="About"
           >
-            <i className="fa-solid fa-circle-info"></i>
+            <i className="fa-solid fa-circle-info" aria-hidden="true"></i>
           </button>
 
-          {/* Logo bubble - static, no hover */}
-          <div className="logo-bubble" aria-label="Porsche logo">
+          <div className="logo-bubble" aria-label="Porsche">
             <span>PORSCHE<span className="dot">.</span></span>
           </div>
 
-          {/* Portfolio */}
           <button
             className={`nav-bubble ${activeSection === 'portfolio' ? 'active' : ''}`}
             data-tooltip="Portfolio"
-            onClick={(e) => handleNavClick(e, 'portfolio')}
+            onClick={() => handleNavClick('portfolio')}
             aria-label="Portfolio"
           >
-            <i className="fa-solid fa-car-side"></i>
+            <i className="fa-solid fa-car-side" aria-hidden="true"></i>
           </button>
 
-          {/* Contact */}
           <button
             className={`nav-bubble ${activeSection === 'contact' ? 'active' : ''}`}
             data-tooltip="Contact"
-            onClick={(e) => handleNavClick(e, 'contact')}
+            onClick={() => handleNavClick('contact')}
             aria-label="Contact"
           >
-            <i className="fa-solid fa-envelope"></i>
+            <i className="fa-solid fa-envelope" aria-hidden="true"></i>
           </button>
         </div>
       </nav>
@@ -113,7 +94,7 @@ export default function Navbar({ onNavigate }: NavbarProps) {
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
       >
-        <i className={`fa-solid ${menuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+        <i className={`fa-solid ${menuOpen ? 'fa-xmark' : 'fa-bars'}`} aria-hidden="true"></i>
       </button>
     </>
   )
