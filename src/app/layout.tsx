@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   keywords: ["Porsche", "911 GT3", "sports car", "3D model", "performance", "luxury car", "supercar"],
   authors: [{ name: "Porsche AG" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
     title: "Porsche 911 GT3",
